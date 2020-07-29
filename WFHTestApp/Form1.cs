@@ -21,23 +21,17 @@ namespace WFHTestApp
     public partial class Form1 : Form
     {
         bool ifVideoON = true;
-        private static System.Timers.Timer aTimer;
+        private static System.Timers.Timer presenceTimer;
+        private static System.Timers.Timer calendarTimer;
+
+        private static List<DateTime> listOfTime = new List<DateTime>();
+
 
         public Form1()
         {
             InitializeComponent();
 
-            aTimer = new System.Timers.Timer();
-            aTimer.Interval = 60000; //60 seconds
-
-            // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += OnTimedEvent;
-
-            // Have the timer fire repeated events (true is the default)
-            aTimer.AutoReset = true;
-
-            // Start the timer
-            aTimer.Enabled = true;
+            getCalendarData();
             try
             {
                 // Your query goes below; "KeyPath" is the key in the registry that you
@@ -56,10 +50,6 @@ namespace WFHTestApp
                 // Start listening for events.
                 watcher.Start();
 
-                // Do something while waiting for events. In your application,
-                // this would just be continuing business as usual.
-         //       System.Threading.Thread.Sleep(100000000);
-
                 // Stop listening for events.
             //    watcher.Stop();
             }
@@ -69,20 +59,100 @@ namespace WFHTestApp
             }
 
 
-
-
-
-            ///Mocking an event with timer. CHange appropriately
-            ///
-
-
-            /*var timer = new Timer();
-            timer.Interval = 2000;
-            timer.Start();
-            timer.Tick += new EventHandler(HandleEvent);                     
-            // Stop listening for events.
-            timer.Stop();*/
+      
         }
+
+        //Start timer for update meeting status
+        public void UpdateMeetingStatus()
+        {
+            presenceTimer = new System.Timers.Timer();
+            calendarTimer = new System.Timers.Timer();
+
+            presenceTimer.Interval = 60000; //60 seconds
+            calendarTimer.Interval = 15 * 60000;
+
+            // Hook up the Elapsed event for the timer. 
+            presenceTimer.Elapsed += OnTimedEvent;
+            calendarTimer.Elapsed += OnTimedEventCalendar;
+
+            // Have the timer fire repeated events (true is the default)
+            presenceTimer.AutoReset = true;
+            calendarTimer.AutoReset = true;
+
+            // Start the timer
+            presenceTimer.Enabled = true;
+            calendarTimer.Enabled = true;
+        }
+
+
+
+        //Fetch and store calendar data
+        private static void getCalendarData()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://spring-boot-basewebapp-1595921330684.azurewebsites.net/");
+           
+            
+            HttpResponseMessage response = client.GetAsync("getUserCalenderForNext24Hour").Result;  // Blocking call!
+
+            if (response.IsSuccessStatusCode)
+            {
+                //var products = response.Content.ReadAsStringAsync().Result;
+                var products = "{\"value\":[{\"start\":{\"dateTime\":\"2020 - 07 - 28T18: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 28T19: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T04: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T06: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T08: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T10: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T11: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T12: 00:00.0000000\",\"timeZone\":\"UTC\"}}]}";
+                var parser = Newtonsoft.Json.Linq.JObject.Parse(products);
+
+                var value = parser["value"];//[1]["start"]["dateTime"];
+                foreach (var item in value)
+                {
+                    //  Console.WriteLine("Array item");
+                    Console.WriteLine(item);
+                    String str = item["start"]["dateTime"].ToObject<String>();
+                    listOfTime.Add(DateTime.Parse(str));
+                    Console.WriteLine(DateTime.Parse(str));
+                }
+                
+                listOfTime.Sort((a, b) => a.CompareTo(b));
+
+                DateTime now = DateTime.Now;
+                DateTime datetime = listOfTime.First();
+
+                while (datetime < now && listOfTime.Any())
+                {
+                    listOfTime.RemoveAt(0);
+                    Console.WriteLine("Removed time" + datetime.ToString());
+                    if (listOfTime.Any())
+                    {
+                        datetime = listOfTime.First();
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+
+
+            }
+            else
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+            }
+
+
+        }
+
+
+        private static void OnTimedEventCalendar(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            DateTime nextMeeting = listOfTime.First();
+            listOfTime.RemoveAt(0);
+            String nextMeetingStr = nextMeeting.ToString("dd/MM/yyyy HH:mm:ss");
+            Console.WriteLine(getPresence());
+            Console.WriteLine("The Next Meeting is at "+nextMeetingStr);
+
+
+        }
+
 
         //GetUserPresence
         private static string getPresence()
@@ -100,6 +170,11 @@ namespace WFHTestApp
                 return presence.ToObject<String>();
 
             }
+            else
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+            }
+
             return null;
         }
 

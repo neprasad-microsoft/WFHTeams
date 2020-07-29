@@ -23,6 +23,7 @@ namespace WFHTestApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 formApp = new Form1();
+            formApp.UpdateMeetingStatus();
             Application.Run(formApp);
         }
         /// <summary>
