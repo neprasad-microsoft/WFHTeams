@@ -9,6 +9,11 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Timers;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 
 
 namespace WFHTestApp
@@ -16,12 +21,23 @@ namespace WFHTestApp
     public partial class Form1 : Form
     {
         bool ifVideoON = true;
+        private static System.Timers.Timer aTimer;
 
         public Form1()
         {
             InitializeComponent();
 
+            aTimer = new System.Timers.Timer();
+            aTimer.Interval = 60000; //60 seconds
 
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+
+            // Have the timer fire repeated events (true is the default)
+            aTimer.AutoReset = true;
+
+            // Start the timer
+            aTimer.Enabled = true;
             try
             {
                 // Your query goes below; "KeyPath" is the key in the registry that you
@@ -68,6 +84,31 @@ namespace WFHTestApp
             timer.Stop();*/
         }
 
+        //GetUserPresence
+        private static string getPresence()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://spring-boot-basewebapp-1595921330684.azurewebsites.net/");
+            HttpResponseMessage response = client.GetAsync("getUsersPresence").Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                //var retVal = response.Content.ReadAsStringAsync().Result;
+                var retVal = "{ \"@odata.context\":\"https://graph.microsoft.com/beta/$metadata#users('206b5a0b-3b77-4148-b5bb-77e0187c9347')/presence/$entity\",\"id\":\"206b5a0b-3b77-4148-b5bb-77e0187c9347\",\"availability\":\"Available\",\"activity\":\"Available\"}";
+                var parser = Newtonsoft.Json.Linq.JObject.Parse(retVal);
+                Console.WriteLine(parser);
+                var presence = parser["availability"];
+                return presence.ToObject<String>();
+
+            }
+            return null;
+        }
+
+        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+
+            Console.WriteLine(getPresence());
+            Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
+        }
         /// <summary>
         /// </summary>
         /// <param name="sender">
