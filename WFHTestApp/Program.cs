@@ -24,6 +24,7 @@ namespace WFHTestApp
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 formApp = new Form1();
             formApp.UpdateMeetingStatus();
+            formApp.UpdateCalendarStatus();
             Application.Run(formApp);
         }
         /// <summary>

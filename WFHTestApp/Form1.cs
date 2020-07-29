@@ -66,24 +66,21 @@ namespace WFHTestApp
         public void UpdateMeetingStatus()
         {
             presenceTimer = new System.Timers.Timer();
-            calendarTimer = new System.Timers.Timer();
-
             presenceTimer.Interval = 60000; //60 seconds
-            calendarTimer.Interval = 15 * 60000;
-
-            // Hook up the Elapsed event for the timer. 
             presenceTimer.Elapsed += OnTimedEvent;
-            calendarTimer.Elapsed += OnTimedEventCalendar;
-
-            // Have the timer fire repeated events (true is the default)
             presenceTimer.AutoReset = true;
-            calendarTimer.AutoReset = true;
-
-            // Start the timer
             presenceTimer.Enabled = true;
-            calendarTimer.Enabled = true;
+            
         }
+        public void UpdateCalendarStatus()
+        {
+            calendarTimer = new System.Timers.Timer();
+            calendarTimer.Interval = 15 * 60000;
+            calendarTimer.Elapsed += OnTimedEventCalendar;
+            calendarTimer.AutoReset = true;
+            calendarTimer.Enabled = true;
 
+        }
 
 
         //Fetch and store calendar data
@@ -91,29 +88,24 @@ namespace WFHTestApp
         {
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("http://spring-boot-basewebapp-1595921330684.azurewebsites.net/");
-           
-            
-            HttpResponseMessage response = client.GetAsync("getUserCalenderForNext24Hour").Result;  // Blocking call!
+             HttpResponseMessage response = client.GetAsync("getUserCalenderForNext24Hour").Result;  // Blocking call!
 
             if (response.IsSuccessStatusCode)
             {
                 //var products = response.Content.ReadAsStringAsync().Result;
                 var products = "{\"value\":[{\"start\":{\"dateTime\":\"2020 - 07 - 28T18: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 28T19: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T04: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T06: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T08: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T10: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T11: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T12: 00:00.0000000\",\"timeZone\":\"UTC\"}}]}";
                 var parser = Newtonsoft.Json.Linq.JObject.Parse(products);
-
                 var value = parser["value"];//[1]["start"]["dateTime"];
                 foreach (var item in value)
                 {
-                    //  Console.WriteLine("Array item");
                     Console.WriteLine(item);
                     String str = item["start"]["dateTime"].ToObject<String>();
-                    listOfTime.Add(DateTime.Parse(str));
+                    listOfTime.Add(DateTime.Parse(str).ToLocalTime());
                     Console.WriteLine(DateTime.Parse(str));
                 }
                 
                 listOfTime.Sort((a, b) => a.CompareTo(b));
-
-                DateTime now = DateTime.Now;
+                DateTime now = DateTime.Now.ToLocalTime();
                 DateTime datetime = listOfTime.First();
 
                 while (datetime < now && listOfTime.Any())
@@ -131,13 +123,11 @@ namespace WFHTestApp
 
                 }
 
-
             }
             else
             {
                 Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
             }
-
 
         }
 
@@ -147,10 +137,7 @@ namespace WFHTestApp
             DateTime nextMeeting = listOfTime.First();
             listOfTime.RemoveAt(0);
             String nextMeetingStr = nextMeeting.ToString("dd/MM/yyyy HH:mm:ss");
-            Console.WriteLine(getPresence());
             Console.WriteLine("The Next Meeting is at "+nextMeetingStr);
-
-
         }
 
 
@@ -200,11 +187,10 @@ namespace WFHTestApp
             Console.WriteLine("Received an event.");
             //opening the subkey  
             RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\NonPackaged\C:#Users#neprasad#AppData#Local#Microsoft#Teams#current#Teams.exe");
-
             //if it does exist, retrieve the stored values  
             if (key != null)
             {
-              
+   
                 Object obj = key.GetValue("LastUsedTimeStop");
                 //int nVal = (int)(obj as int?);
                 long nVal = (long)(obj);
@@ -334,7 +320,7 @@ namespace WFHTestApp
             this.ResumeLayout(false);
         }
             
-            public System.Windows.Forms.PictureBox pictureBox1;
+             public System.Windows.Forms.PictureBox pictureBox1;
              public System.Windows.Forms.PictureBox pictureBox2;
              public System.Windows.Forms.PictureBox pictureBox3; 
     }
