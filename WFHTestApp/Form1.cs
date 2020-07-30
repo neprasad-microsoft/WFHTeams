@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,7 @@ namespace WFHTestApp
 {
     public partial class Form1 : Form
     {
+        private static String strResourceDir = @"C:\Users\neprasad\source\repos\WFHTestApp\WFHTestApp\Resources";
         private static bool ifVideoON = true;
         private static System.Timers.Timer presenceTimer;
         private static System.Timers.Timer calendarTimer;
@@ -27,12 +29,16 @@ namespace WFHTestApp
         private static DateTime nextMeetingTime;
         private static int nPresence;
         private static bool bMeetingReminder;
+        
 
 
         public Form1()
         {
             InitializeComponent();
-            
+            this.KeyPreview = true;
+            this.KeyPress +=
+                new KeyPressEventHandler(Form1_KeyPress);
+
             try
             {
                 // Your query goes below; "KeyPath" is the key in the registry that you
@@ -40,7 +46,7 @@ namespace WFHTestApp
                 WqlEventQuery query = new WqlEventQuery(
                      "SELECT * FROM RegistryValueChangeEvent WHERE " +
                      "Hive = 'HKEY_LOCAL_MACHINE'" +
-                     @"AND KeyPath = 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\webcam\\NonPackaged\\C:#Users#napulath#AppData#Local#Microsoft#Teams#current#Teams.exe' AND ValueName='LastUsedTimeStop'");
+                     @"AND KeyPath = 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\webcam\\NonPackaged\\C:#Users#neprasad#AppData#Local#Microsoft#Teams#current#Teams.exe' AND ValueName='LastUsedTimeStop'");
 
                 ManagementEventWatcher watcher = new ManagementEventWatcher(query);
                 //Console.WriteLine("Waiting for an event...");
@@ -59,6 +65,28 @@ namespace WFHTestApp
                 Console.WriteLine("An error occurred: " + managementException.Message);
             }
 
+        }
+
+
+        void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar >= 48 && e.KeyChar <= 57)
+            {
+                switch(e.KeyChar)
+                {
+                    case (char)49:
+                        MicOnVideoOffMeeting();
+                        break;
+                    case (char)50:
+                        MicOffVideoOffMeetingNo();
+                        break;
+                    default:
+                        break;
+
+                }
+      
+
+            }
         }
 
         //Start timer for update meeting status
@@ -80,7 +108,12 @@ namespace WFHTestApp
             calendarTimer.Enabled = true;
 
         }
+       /* public void demoStub()
+        {
+            nPresence = 0;
 
+
+        }*/
 
         //Fetch and store calendar data
         public void getCalendarData()
@@ -185,37 +218,49 @@ namespace WFHTestApp
         public void refreshScreen()
         {
             //Use combination of fVideoOn, nPresence and bMeetingReminder to display different images
-            if (ifVideoON)
+    /*        if (ifVideoON)
             {
                 MicOnVideoOnMeeting();
             }
-            else if (nPresence > 0 || bMeetingReminder)
+            else if (bMeetingReminder)
             {
                 MicOnVideoOffMeeting();
+            }
+            else if (nPresence > 0)
+            {
+                MicOffVideoOffMeetingNo();
             }
             else
             {
                 MicOffVideoOffMeetingNo();
             }
+    */
+            if (ifVideoON)
+            {
+                MicOnVideoOnMeeting();
+            }
+            else
+            {
+                MicOnVideoOffMeeting();
+            }
         }
 
         public void MicOffVideoOffMeetingNo()
         {
-            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOffVideoOffMeetingNo.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+            this.pictureBox1.Image = Image.FromFile(strResourceDir+@"\MicOffVideoOffMeetingNo.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
         }
         public void MicOnVideoOffMeeting()
         {
-            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOnVideoOffMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+            this.pictureBox1.Image = Image.FromFile(strResourceDir+@"\MicOnVideoOffMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
         }
 
         public void MicOnVideoOnMeeting()
         {
-            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOnVideoOnMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+            this.pictureBox1.Image = Image.FromFile(strResourceDir+@"\MicOnVideoOnMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
         }
         public void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
 
-            //Console.WriteLine(getPresence());
             refreshScreen();
             //Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
         }
@@ -234,7 +279,7 @@ namespace WFHTestApp
         
             //Console.WriteLine("Received an event.");
             //opening the subkey  
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\NonPackaged\C:#Users#napulath#AppData#Local#Microsoft#Teams#current#Teams.exe");
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\NonPackaged\C:#Users#neprasad#AppData#Local#Microsoft#Teams#current#Teams.exe");
             //if it does exist, retrieve the stored values  
             if (key != null)
             {
@@ -259,62 +304,61 @@ namespace WFHTestApp
 
         public void VideoON()
         {
-//            pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\VideoOn.jpg"); // global::WFHTestApp.Properties.Resources.MicOff; 
+//            pictureBox1.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\VideoOn.jpg"); // global::WFHTestApp.Properties.Resources.MicOff; 
         }
 
         public void VideoOFF()
         {
-  //          pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\VideoOff.jpg");
+  //          pictureBox1.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\VideoOff.jpg");
         }
 
         public void MicOFF()
         {
-            //pictureBox2.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\MicOff.jpg");
+            //pictureBox1.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\MicOff.jpg");
         }
 
         public void MicON()
         {
-  //          pictureBox2.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\MicOn.jpg");
+  //          pictureBox1.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\MicOn.jpg");
         }
 
         public void SpeakerOFF()
         {
-  //          pictureBox3.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\SpeakerOff.jpg");
+  //          pictureBox3.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\SpeakerOff.jpg");
         }
 
         public void SpeakerON()
         {            
-   //        pictureBox3.Image = Image.FromFile(@"C:\Users\napulath\source\repos\WFHTestApp\SpeakerOn.jpg");  
+   //        pictureBox3.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\SpeakerOn.jpg");  
         }
 
-        public void InitializeComponent()
+
+
+    public void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
+            //
             // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 2);
+            //
+            this.pictureBox1.ImageLocation = strResourceDir+@"\MicOffVideoOffMeetingNo.png" ;
+            this.pictureBox1.Location = new System.Drawing.Point(-4, 1);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(654, 430);
+            this.pictureBox1.Size = new System.Drawing.Size(656, 440);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            // 
+            //
             // Form1
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(938, 601);
+            //
+            this.ClientSize = new System.Drawing.Size(650, 442);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
-            this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
+
 
     }
 }
