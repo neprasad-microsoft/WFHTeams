@@ -25,6 +25,9 @@ namespace WFHTestApp
         private static System.Timers.Timer calendarTimer;
 
         private static List<DateTime> listOfTime = new List<DateTime>();
+        private static DateTime nextMeetingTime;
+        private static int nPresence;
+        private static bool bMeetingReminder;
 
 
         public Form1()
@@ -136,6 +139,19 @@ namespace WFHTestApp
         {
             DateTime nextMeeting = listOfTime.First();
             listOfTime.RemoveAt(0);
+            nextMeetingTime = nextMeeting;
+            DateTime now = DateTime.Now.ToLocalTime();
+            TimeSpan span = nextMeetingTime.Subtract(now);
+            if (span.TotalMinutes.CompareTo(15d) < 0)
+            {
+                bMeetingReminder = true;
+                Console.WriteLine("Time Difference (minutes): " + span.TotalMinutes);
+                refreshScreen();
+            }
+            else
+            {
+                bMeetingReminder = false;
+            }
             String nextMeetingStr = nextMeeting.ToString("dd/MM/yyyy HH:mm:ss");
             Console.WriteLine("The Next Meeting is at "+nextMeetingStr);
         }
@@ -154,8 +170,15 @@ namespace WFHTestApp
                 var parser = Newtonsoft.Json.Linq.JObject.Parse(retVal);
                 Console.WriteLine(parser);
                 var presence = parser["availability"];
-                return presence.ToObject<String>();
-
+                String strPresence =  presence.ToObject<String>();
+                if (strPresence.Equals("Available", StringComparison.OrdinalIgnoreCase))
+                {
+                    nPresence = 1;
+                } else
+                {
+                    nPresence = 0;
+                }
+               
             }
             else
             {
@@ -165,10 +188,16 @@ namespace WFHTestApp
             return null;
         }
 
+        private static void refreshScreen()
+        {
+            //Use combination of fVideoOn, nPresence and bMeetingReminder to display different images
+        }
+
         private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
 
             Console.WriteLine(getPresence());
+            refreshScreen();
             Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
         }
         /// <summary>
@@ -202,6 +231,9 @@ namespace WFHTestApp
                 {
                     ifVideoON = false;
                 }
+
+                refreshScreen();
+                /*
                 if (ifVideoON)
                 {
                     VideoON();
@@ -211,6 +243,7 @@ namespace WFHTestApp
                 {
                     VideoOFF();
                 }
+                */
                 key.Close();
             }
 
@@ -233,6 +266,7 @@ namespace WFHTestApp
 
         public void VideoON()
         {
+
             pictureBox1.Image = Image.FromFile(@"C:\Users\neprasad\source\repos\WFHTestApp\VideoOn.jpg"); // global::WFHTestApp.Properties.Resources.MicOff; 
         }
 
