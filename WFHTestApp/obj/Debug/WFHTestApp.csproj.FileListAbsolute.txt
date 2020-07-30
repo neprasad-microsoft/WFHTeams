@@ -21,7 +21,6 @@ C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\bin\Debug\WFHTestApp.exe.config
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\bin\Debug\WFHTestApp.exe
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\bin\Debug\WFHTestApp.pdb
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\bin\Debug\Newtonsoft.Json.dll
-C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\bin\Debug\Newtonsoft.Json.xml
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\obj\Debug\WFHTestApp.Form1.resources
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\obj\Debug\WFHTestApp.Properties.Resources.resources
 C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\obj\Debug\WFHTestApp.csproj.GenerateResource.cache

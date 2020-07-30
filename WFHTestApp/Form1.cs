@@ -19,7 +19,7 @@ namespace WFHTestApp
 {
     public partial class Form1 : Form
     {
-        bool ifVideoON = true;
+        private static bool ifVideoON = true;
         private static System.Timers.Timer presenceTimer;
         private static System.Timers.Timer calendarTimer;
 
@@ -32,8 +32,7 @@ namespace WFHTestApp
         public Form1()
         {
             InitializeComponent();
-
-            getCalendarData();
+            
             try
             {
                 // Your query goes below; "KeyPath" is the key in the registry that you
@@ -60,8 +59,6 @@ namespace WFHTestApp
                 Console.WriteLine("An error occurred: " + managementException.Message);
             }
 
-
-      
         }
 
         //Start timer for update meeting status
@@ -86,13 +83,13 @@ namespace WFHTestApp
 
 
         //Fetch and store calendar data
-        private static void getCalendarData()
+        public void getCalendarData()
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://spring-boot-basewebapp-1595921330684.azurewebsites.net/");
-             HttpResponseMessage response = client.GetAsync("getUserCalenderForNext24Hour").Result;  // Blocking call!
-
-            if (response.IsSuccessStatusCode)
+            //   HttpClient client = new HttpClient();
+            //  client.BaseAddress = new Uri("http://spring-boot-basewebapp-1595921330684.azurewebsites.net/");
+            //          HttpResponseMessage response = client.GetAsync("getUserCalenderForNext24Hour").Result;  // Blocking call!
+            //if (!response.IsSuccessStatusCode)
+            if(true)
             {
                 //var products = response.Content.ReadAsStringAsync().Result;
                 var products = "{\"value\":[{\"start\":{\"dateTime\":\"2020 - 07 - 28T18: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 28T19: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T04: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T06: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T08: 30:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T10: 00:00.0000000\",\"timeZone\":\"UTC\"}},{\"start\":{\"dateTime\":\"2020 - 07 - 29T11: 00:00.0000000\",\"timeZone\":\"UTC\"},\"end\":{\"dateTime\":\"2020 - 07 - 29T12: 00:00.0000000\",\"timeZone\":\"UTC\"}}]}";
@@ -130,11 +127,9 @@ namespace WFHTestApp
             {
                 //Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
             }
-
         }
 
-
-        private static void OnTimedEventCalendar(Object source, System.Timers.ElapsedEventArgs e)
+        public void OnTimedEventCalendar(Object source, System.Timers.ElapsedEventArgs e)
         {
             DateTime nextMeeting = listOfTime.First();
             listOfTime.RemoveAt(0);
@@ -187,12 +182,37 @@ namespace WFHTestApp
             return null;
         }
 
-        private static void refreshScreen()
+        public void refreshScreen()
         {
             //Use combination of fVideoOn, nPresence and bMeetingReminder to display different images
+            if (ifVideoON)
+            {
+                MicOnVideoOnMeeting();
+            }
+            else if (nPresence > 0 || bMeetingReminder)
+            {
+                MicOnVideoOffMeeting();
+            }
+            else
+            {
+                MicOffVideoOffMeetingNo();
+            }
         }
 
-        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        public void MicOffVideoOffMeetingNo()
+        {
+            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOffVideoOffMeetingNo.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+        }
+        public void MicOnVideoOffMeeting()
+        {
+            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOnVideoOffMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+        }
+
+        public void MicOnVideoOnMeeting()
+        {
+            this.pictureBox1.Image = Image.FromFile(@"C:\Users\napulath\hackathon\WFHTeams\WFHTestApp\Resources\MicOnVideoOnMeeting.png"); // global::WFHTestApp.Properties.Resources.MicOff; 
+        }
+        public void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
 
             //Console.WriteLine(getPresence());
@@ -287,7 +307,7 @@ namespace WFHTestApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 432);
+            this.ClientSize = new System.Drawing.Size(938, 601);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "Form1";
