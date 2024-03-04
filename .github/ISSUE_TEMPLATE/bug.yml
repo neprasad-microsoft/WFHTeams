@@ -125,5 +125,5 @@ body:
       options:
         - label: I have already read the documentation listed here
           required: true
-        - label: I have already read the documentation listed here
+        - label: I have already searched if this issue has been reported before.
           required: true
