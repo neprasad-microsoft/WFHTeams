@@ -120,7 +120,7 @@ body:
       required: false
   - type: checkboxes
     id: confirm
-    label: Please confirm the following:
+    label: Please confirm the following
     attributes:
       options:
         - label: I have already read the documentation listed here
