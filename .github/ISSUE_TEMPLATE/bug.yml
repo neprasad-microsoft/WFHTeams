@@ -118,3 +118,11 @@ body:
       description: Anything else that might be relevant
     validations:
       required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      options:
+        - label: I have already read the documentation listed here
+          required: true
+        - label: I have already searched if this issue has been reported before
+          required: true
