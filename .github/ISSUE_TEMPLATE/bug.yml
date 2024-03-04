@@ -119,11 +119,10 @@ body:
     validations:
       required: false
   - type: checkboxes
-    id: confirm
-    label: Please confirm the following
+    id: terms
     attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
       options:
-        - label: I have already read the documentation listed here
-          required: true
-        - label: I have already searched if this issue has been reported before
+        - label: I agree to follow this project's Code of Conduct
           required: true
