@@ -41,7 +41,7 @@ body:
   - type: input
     id: platform
     attributes:
-      label: Platform [Windows,Mac, iOS, Android, Office on the web, Monarch] 
+      label: Platform [Windows,Mac, iOS, Android, Office on the web] 
       description: |
         The Platform you are using.
     validations:
@@ -49,7 +49,7 @@ body:
   - type: input
     id: host
     attributes:
-      label: Host [Excel, Word, PowerPoint, Outlook etc.] 
+      label: Host [Excel, Word, PowerPoint, New Outlook, Legacy Outlook etc.] 
       description: |
         The Host you are using.
     validations:
