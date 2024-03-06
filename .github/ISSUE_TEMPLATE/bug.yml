@@ -80,6 +80,18 @@ body:
       label: Browser (If using Office on the web, use NA otherwise)
     validations:
       required: false
+  - type: input
+    id: isProd
+    attributes:
+      label: Is this add-in published or in development stage 
+    validations:
+      required: true
+  - type: input
+    id: users
+    attributes:
+      label: If this is a Prod add-in please give an estimate of the number of users impacted 
+    validations:
+      required: false
   - type: textarea
     id: reproduction
     attributes:
