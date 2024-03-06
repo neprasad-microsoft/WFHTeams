@@ -31,7 +31,17 @@ body:
         Please have a minimal reproduction of your issue. Please list down your repro steps in detail. 
         You can also have a repro video attached with the issue. Attach a sample manifest which can be used to repro your issue. You can add these to a Git repo and share it with us.
         This should have easy to understand steps and manifest. The clearer the steps, the easier it is for us to fix the issue. 
+        Please share relevant network logs or diagnostic logs also in the repo.  
         If this is a tenant specific issue, please send an email to <> with your Github Issue Title as the subject and a test user account in the body.  
+  - type: markdown
+    attributes:
+      value: |
+        ## How to collect logs
+        #Mac
+        Go to Help-> Collect Diagnostics -> Get Started-> Collect Logs .Copy the Incident ID and share 
+        #Mobile
+        Repro the issue ,go back to Help & Feedback->Collect Diagnostics , Click on Get Started 
+        Click on Upload Outlook Logs, continue with the steps until you get a confirmation that all logs are uploaded.
   - type: markdown
     attributes:
       value: |
